@@ -15,7 +15,7 @@ public class Maerchenwelt {
         if ((gefahrenAnzahl + baumAnzahl) > (x * y - 3)) {
             throw new IllegalArgumentException("Reduzieren Sie die Anzahl der Baume und Gefahren.");
         }
-        if (x < 10 || y < 10) {
+        if (x < 2 || y < 2) {
             throw new IllegalArgumentException("Vergroessern Sie den verwunschenen Wald.");
         }
         karte = new VerwunschenerWald[x][y];
@@ -39,9 +39,11 @@ public class Maerchenwelt {
         int max_y = y - 1;
         int oma_y = rand_y.nextInt(max_y - min_y) + min_y;
 
-        Position o = new Position(oma_x, oma_y);
+        //  Position o = new Position(oma_x, oma_y);
+        Position o = new Position(5, 5);
         oma = new Oma(o);
-        karte[oma_x][oma_y] = oma;
+        // karte[oma_x][oma_y] = oma;
+        karte[5][5] = oma;
 
 
     }
@@ -91,36 +93,60 @@ public class Maerchenwelt {
 
             switch (bewegung) {
                 case 0:
-
-                    if (((r_y - 1) >= 0) && ((r_y - 1) < y) && karte[r_x][r_y - 1] == null) {
-                        rotkaeppchen.geheHoch();
-                        Position neu = new Position(r.getX(), r.getY());
-                        weg.add(neu);
+                    if (((r_y - 1) >= 0) && ((r_y - 1) < y)) {
+                        if (karte[r_x][r_y - 1] == null) {
+                            rotkaeppchen.geheHoch();
+                            karte[r_x][r_y] = null;
+                            karte[r.getX()][r.getY()] = rotkaeppchen;
+                            Position neu = new Position(r.getX(), r.getY());
+                            weg.add(neu);
+                        } else if ((karte[r_x][r_y - 1].position.equals(ziel))) {
+                            System.exit(0);
+                        }
                     }
+
                     break;
                 case 1:
-                    if (((r_x - 1) >= 0) && ((r_x - 1) < x) && karte[r_x - 1][r_y] == null) {
-                        rotkaeppchen.geheLinks();
-                        Position neu = new Position(r.getX(), r.getY());
-                        weg.add(neu);
+                    if (((r_x - 1) >= 0) && ((r_x - 1) < x)) {
+                        if (karte[r_x - 1][r_y] == null) {
+                            rotkaeppchen.geheLinks();
+                            karte[r_x][r_y] = null;
+                            karte[r.getX()][r.getY()] = rotkaeppchen;
+                            Position neu = new Position(r.getX(), r.getY());
+                            weg.add(neu);
+                        } else if ((karte[r_x - 1][r_y].position.equals(ziel))) {
+                            System.exit(0);
+                        }
                     }
 
                     break;
                 case 2:
-                    if ((r_x + 1) >= 0 && (r_x + 1) < x && karte[r_x + 1][r_y] == null) {
-                        rotkaeppchen.geheRechts();
-                        Position neu = new Position(r.getX(), r.getY());
-                        weg.add(neu);
+                    if ((r_x + 1) >= 0 && (r_x + 1) < x) {
+                        if (karte[r_x + 1][r_y] == null) {
+                            rotkaeppchen.geheRechts();
+                            karte[r_x][r_y] = null;
+                            karte[r.getX()][r.getY()] = rotkaeppchen;
+                            Position neu = new Position(r.getX(), r.getY());
+                            weg.add(neu);
+                        } else if ((karte[r_x + 1][r_y].position.equals(ziel))) {
+                            System.exit(0);
+                        }
                     }
+
 
                     break;
                 case 3:
-                    if ((r_y + 1) >= 0 && (r_y + 1) < y && karte[r_x][r_y + 1] == null) {
-                        rotkaeppchen.geheRunter();
-                        Position neu = new Position(r.getX(), r.getY());
-                        weg.add(neu);
+                    if ((r_y + 1) >= 0 && (r_y + 1) < y) {
+                        if (karte[r_x][r_y + 1] == null) {
+                            rotkaeppchen.geheRunter();
+                            karte[r_x][r_y] = null;
+                            karte[r.getX()][r.getY()] = rotkaeppchen;
+                            Position neu = new Position(r.getX(), r.getY());
+                            weg.add(neu);
+                        } else if ((karte[r_x][r_y + 1].position.equals(ziel))) {
+                            System.exit(0);
+                        }
                     }
-
                     break;
 
                 default:
@@ -128,18 +154,38 @@ public class Maerchenwelt {
             }
 
             züge--;
+            printWald();
 
-            if (karte[0][0].equals(karte[ziel.getX()][ziel.getY()])) {
+              /*
+            if ((rotkaeppchen.position).equals(ziel)) {
                 System.out.println("Rotkaeppchen ist bei Oma angekommen.");
+                printWald();
                 break;
             }
-            if (züge == 0) System.out.println("Rotkaeppchen hat sich auf dem Weg zur Oma verlaufen.");
+            if (züge == 0) {
+                System.out.println("Rotkaeppchen hat sich auf dem Weg zur Oma verlaufen.");
+                printWald();
+            }*/
         }
+
+        if ((rotkaeppchen.position).equals(ziel)) {
+            System.out.println("Rotkaeppchen ist bei Oma angekommen.");
+            printWald();
+            System.out.println(züge);
+        }
+        if (züge == 0) {
+            //  System.out.println("Rotkaeppchen hat sich auf dem Weg zur Oma verlaufen.");
+            // printWald();
+            // System.out.println(züge);
+        }
+
+
         return weg;
     }
 
     public void printWald() {
-        // Rahmen: linke obere Ecke System.out.print("+");
+        // Rahmen: linke obere Ecke
+        System.out.print("+");
         // Rahmen: erste Zeile
         for (int i = 0; i < x; i++) {
             System.out.print("-");
