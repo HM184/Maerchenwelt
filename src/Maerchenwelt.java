@@ -15,7 +15,7 @@ public class Maerchenwelt {
         if ((gefahrenAnzahl + baumAnzahl) > (x * y - 3)) {
             throw new IllegalArgumentException("Reduzieren Sie die Anzahl der Baume und Gefahren.");
         }
-        if (x < 2 || y < 2) {
+        if (x < 10 || y < 10) {
             throw new IllegalArgumentException("Vergroessern Sie den verwunschenen Wald.");
         }
         karte = new VerwunschenerWald[x][y];
@@ -39,11 +39,9 @@ public class Maerchenwelt {
         int max_y = y - 1;
         int oma_y = rand_y.nextInt(max_y - min_y) + min_y;
 
-        //  Position o = new Position(oma_x, oma_y);
-        Position o = new Position(5, 5);
+        Position o = new Position(oma_x, oma_y);
         oma = new Oma(o);
-        // karte[oma_x][oma_y] = oma;
-        karte[5][5] = oma;
+        karte[oma_x][oma_y] = oma;
 
 
     }
@@ -101,7 +99,7 @@ public class Maerchenwelt {
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                         } else if ((karte[r_x][r_y - 1].position.equals(ziel))) {
-                            System.exit(0);
+                            gameOver();
                         }
                     }
 
@@ -115,7 +113,7 @@ public class Maerchenwelt {
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                         } else if ((karte[r_x - 1][r_y].position.equals(ziel))) {
-                            System.exit(0);
+                            gameOver();
                         }
                     }
 
@@ -129,7 +127,7 @@ public class Maerchenwelt {
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                         } else if ((karte[r_x + 1][r_y].position.equals(ziel))) {
-                            System.exit(0);
+                            gameOver();
                         }
                     }
 
@@ -144,7 +142,7 @@ public class Maerchenwelt {
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                         } else if ((karte[r_x][r_y + 1].position.equals(ziel))) {
-                            System.exit(0);
+                            gameOver();
                         }
                     }
                     break;
@@ -152,34 +150,12 @@ public class Maerchenwelt {
                 default:
                     break;
             }
-
             züge--;
-            printWald();
-
-              /*
-            if ((rotkaeppchen.position).equals(ziel)) {
-                System.out.println("Rotkaeppchen ist bei Oma angekommen.");
-                printWald();
-                break;
-            }
-            if (züge == 0) {
-                System.out.println("Rotkaeppchen hat sich auf dem Weg zur Oma verlaufen.");
-                printWald();
-            }*/
-        }
-
-        if ((rotkaeppchen.position).equals(ziel)) {
-            System.out.println("Rotkaeppchen ist bei Oma angekommen.");
-            printWald();
-            System.out.println(züge);
         }
         if (züge == 0) {
-            //  System.out.println("Rotkaeppchen hat sich auf dem Weg zur Oma verlaufen.");
-            // printWald();
-            // System.out.println(züge);
+            printWald();
+            System.out.println("Rotkaeppchen hat sich auf dem Weg zur Oma verlaufen.");
         }
-
-
         return weg;
     }
 
@@ -220,6 +196,12 @@ public class Maerchenwelt {
         printWald();
         Position ziel = oma.getPosition();
         wegFinden(ziel);
+    }
+
+    public void gameOver() {
+        printWald();
+        System.out.println("Rotkaeppchen ist bei Oma angekommen.");
+        System.exit(0);
     }
 
 
