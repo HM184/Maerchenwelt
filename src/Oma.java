@@ -1,4 +1,4 @@
-public class Oma extends VerwunschenerWald {
+public class Oma extends VerwunschenerWald implements Person {
 
     public Oma(Position position) {
         super(position);
@@ -7,5 +7,15 @@ public class Oma extends VerwunschenerWald {
     @Override
     public String getName() {
         return "O";
+    }
+
+    @Override
+    public void sprechen(Person konversationspartner, int zaehler) {
+        if (zaehler == 2) {
+            System.out.println("Hallo Rotkaeppchen");
+            zaehler++;
+            sprechen(this, zaehler);
+            return;
+        }
     }
 }

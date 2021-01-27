@@ -8,6 +8,9 @@ public class Maerchenwelt {
     private VerwunschenerWald[][] karte; //aktuelle Karte des Waldstücks
     private Oma oma;
     private Rotkaeppchen rotkaeppchen;
+    private boolean foundOma = false;
+    private boolean isLebending = true;
+    private boolean isHome = false;
 
     public Maerchenwelt(int x, int y, int gefahrenAnzahl, int baumAnzahl) throws IllegalArgumentException {
         this.x = x;
@@ -15,35 +18,76 @@ public class Maerchenwelt {
         if ((gefahrenAnzahl + baumAnzahl) > (x * y - 3)) {
             throw new IllegalArgumentException("Reduzieren Sie die Anzahl der Baume und Gefahren.");
         }
-        if (x < 10 || y < 10) {
+        if (x < 0 || y < 0) {
             throw new IllegalArgumentException("Vergroessern Sie den verwunschenen Wald.");
         }
         karte = new VerwunschenerWald[x][y];
+        positionRotkaeppchen();
+        positionOma();
+        positionWolf();
+        positionGefahr(gefahrenAnzahl);
+        positionBaum(baumAnzahl);
+    }
+
+    public void positionRotkaeppchen() {
         Position r = new Position(0, 0);
         rotkaeppchen = new Rotkaeppchen(r);
         karte[0][0] = rotkaeppchen;
-        initializeOma();
-        positionBaum(baumAnzahl);
-
-
     }
 
-    public void initializeOma() {
+    public void positionOma() {
         Random rand_x = new Random();
         Random rand_y = new Random();
         int min_x = x - 8;
         int max_x = x - 1;
-        int oma_x = rand_x.nextInt(max_x - min_x) + min_x;
+        int oma_x = 2;//rand_x.nextInt(max_x - min_x) + min_x;
 
         int min_y = y - 8;
         int max_y = y - 1;
-        int oma_y = rand_y.nextInt(max_y - min_y) + min_y;
+        int oma_y = 2;//rand_y.nextInt(max_y - min_y) + min_y;
 
         Position o = new Position(oma_x, oma_y);
+
         oma = new Oma(o);
         karte[oma_x][oma_y] = oma;
 
 
+    }
+
+    public void positionWolf() {
+        Random rand_x = new Random();
+        int min_x = 0;
+        int min_y = 0;
+        int wolf_x = rand_x.nextInt(x - min_x) + min_x;
+
+        Random rand_y = new Random();
+        int wolf_y = rand_y.nextInt(y - min_y) + min_y;
+
+        Position w = new Position(wolf_x, wolf_y);
+        if (karte[wolf_x][wolf_y] == null) {
+            karte[wolf_x][wolf_y] = new Wolf(w);
+        } else {
+            positionWolf();
+        }
+    }
+
+    public void positionGefahr(int gefahrenAnzahl) {
+        while (gefahrenAnzahl > 0) {
+
+            Random rand_x = new Random();
+            int min_x = 0;
+            int min_y = 0;
+            int gefahr_x = rand_x.nextInt(x - min_x) + min_x;
+
+            Random rand_y = new Random();
+            int gefahr_y = rand_y.nextInt(y - min_y) + min_y;
+
+            Position g = new Position(gefahr_x, gefahr_y);
+            if (karte[gefahr_x][gefahr_y] == null) {
+                karte[gefahr_x][gefahr_y] = new Gefahr(g);
+                gefahrenAnzahl--;
+            }
+        }
     }
 
     public void positionBaum(int baumAnzahl) {
@@ -82,7 +126,7 @@ public class Maerchenwelt {
         ArrayList<Position> weg = new ArrayList<Position>();
         int züge = 500;
 
-        while (züge > 0) {
+        while (züge > 0 && !isHome) {
             Random random_bewegung = new Random();
             int bewegung = random_bewegung.nextInt(4);
             Position r = rotkaeppchen.getPosition();
@@ -98,11 +142,26 @@ public class Maerchenwelt {
                             karte[r.getX()][r.getY()] = rotkaeppchen;
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
-                        } else if ((karte[r_x][r_y - 1].position.equals(ziel))) {
-                            gameOver();
+                        } else if (karte[r_x][r_y - 1].getName().equals("W")) {
+                            rotkaeppchen.gesundheitVerringern(karte[r_x][r_y - 1].schaden);
+                            isLebending = rotkaeppchen.istNochLebendig();
+                            break;
+                        } else if (karte[r_x][r_y - 1].getName().equals("G")) {
+                            rotkaeppchen.gesundheitVerringern(karte[r_x][r_y - 1].schaden);
+                            isLebending = rotkaeppchen.istNochLebendig();
+                            break;
+                        }
+                        if ((karte[r_x][r_y - 1].position.equals(ziel))) {
+                            if (foundOma) {
+                                isHome = true;
+                            } else {
+                                printWald();
+                                System.out.println("Rotkaeppchen ist bei Oma angekommen.");
+                                züge = 0;
+                                foundOma = true;
+                            }
                         }
                     }
-
                     break;
                 case 1:
                     if (((r_x - 1) >= 0) && ((r_x - 1) < x)) {
@@ -112,11 +171,26 @@ public class Maerchenwelt {
                             karte[r.getX()][r.getY()] = rotkaeppchen;
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
-                        } else if ((karte[r_x - 1][r_y].position.equals(ziel))) {
-                            gameOver();
+                        } else if (karte[r_x - 1][r_y].getName().equals("W")) {
+                            rotkaeppchen.gesundheitVerringern(karte[r_x - 1][r_y].schaden);
+                            isLebending = rotkaeppchen.istNochLebendig();
+                            break;
+                        } else if (karte[r_x - 1][r_y].getName().equals("G")) {
+                            rotkaeppchen.gesundheitVerringern(karte[r_x - 1][r_y].schaden);
+                            isLebending = rotkaeppchen.istNochLebendig();
+                            break;
+                        }
+                        if ((karte[r_x - 1][r_y].position.equals(ziel))) {
+                            if (foundOma) {
+                                isHome = true;
+                            } else {
+                                printWald();
+                                System.out.println("Rotkaeppchen ist bei Oma angekommen.");
+                                züge = 0;
+                                foundOma = true;
+                            }
                         }
                     }
-
                     break;
                 case 2:
                     if ((r_x + 1) >= 0 && (r_x + 1) < x) {
@@ -126,12 +200,28 @@ public class Maerchenwelt {
                             karte[r.getX()][r.getY()] = rotkaeppchen;
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
-                        } else if ((karte[r_x + 1][r_y].position.equals(ziel))) {
-                            gameOver();
+                        } else if (karte[r_x + 1][r_y].getName().equals("W")) {
+                            rotkaeppchen.gesundheitVerringern(karte[r_x + 1][r_y].schaden);
+                            isLebending = rotkaeppchen.istNochLebendig();
+
+
+                        } else if (karte[r_x + 1][r_y].getName().equals("G")) {
+                            rotkaeppchen.gesundheitVerringern(karte[r_x + 1][r_y].schaden);
+                            isLebending = rotkaeppchen.istNochLebendig();
+                            break;
+
+                        }
+                        if ((karte[r_x + 1][r_y].position.equals(ziel))) {
+                            if (foundOma) {
+                                isHome = true;
+                            } else {
+                                printWald();
+                                System.out.println("Rotkaeppchen ist bei Oma angekommen.");
+                                züge = 0;
+                                foundOma = true;
+                            }
                         }
                     }
-
-
                     break;
                 case 3:
                     if ((r_y + 1) >= 0 && (r_y + 1) < y) {
@@ -141,20 +231,48 @@ public class Maerchenwelt {
                             karte[r.getX()][r.getY()] = rotkaeppchen;
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
-                        } else if ((karte[r_x][r_y + 1].position.equals(ziel))) {
-                            gameOver();
+                        } else if (karte[r_x][r_y + 1].getName().equals("W")) {
+                            rotkaeppchen.gesundheitVerringern(karte[r_x][r_y + 1].schaden);
+                            isLebending = rotkaeppchen.istNochLebendig();
+                            break;
+
+                        } else if (karte[r_x][r_y + 1].getName().equals("G")) {
+                            rotkaeppchen.gesundheitVerringern(karte[r_x][r_y + 1].schaden);
+                            isLebending = rotkaeppchen.istNochLebendig();
+                            break;
+
+                        }
+                        if ((karte[r_x][r_y + 1].position.equals(ziel))) {
+                            if (foundOma) {
+                                isHome = true;
+                            } else {
+                                printWald();
+                                System.out.println("Rotkaeppchen ist bei Oma angekommen.");
+                                züge = 0;
+                                foundOma = true;
+                            }
+
                         }
                     }
                     break;
-
                 default:
                     break;
             }
             züge--;
         }
-        if (züge == 0) {
+        if (züge == 0 && isLebending) {
+            if (foundOma) {
+                printWald();
+                System.out.println("Rotkaeppchen hat sich auf dem Heimweg verlaufen.");
+            } else {
+                printWald();
+                foundOma = false;
+                System.out.println("Rotkaeppchen hat sich auf dem Weg zur Oma verlaufen.");
+            }
+        }
+        if (isHome) {
             printWald();
-            System.out.println("Rotkaeppchen hat sich auf dem Weg zur Oma verlaufen.");
+            System.out.println("Rotkaeppchen ist wieder zu Hause angekommen.");
         }
         return weg;
     }
@@ -196,13 +314,21 @@ public class Maerchenwelt {
         printWald();
         Position ziel = oma.getPosition();
         wegFinden(ziel);
+        if (foundOma) {
+            rotkaeppchen.setGesundheit(100);
+            rotkaeppchen.sprechen(oma, 1);
+            oma.sprechen(rotkaeppchen, 2);
+            rotkaeppchen.sprechen(oma, 3);
+            Position zuhause = new Position(0, 0);
+            wegFinden(zuhause);
+        }
+
+        if (!isLebending) {
+            if (!foundOma) {
+                System.out.println("Rotkaeppchen ist nicht bei der Oma angekommen.");
+            } else if (!isHome) {
+                System.out.println("Rotkaeppchen ist nicht wieder zu Hause angekommen.");
+            }
+        }
     }
-
-    public void gameOver() {
-        printWald();
-        System.out.println("Rotkaeppchen ist bei Oma angekommen.");
-        System.exit(0);
-    }
-
-
 }

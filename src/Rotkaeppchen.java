@@ -1,4 +1,6 @@
-public class Rotkaeppchen extends VerwunschenerWald {
+import java.util.Optional;
+
+public class Rotkaeppchen extends VerwunschenerWald implements Person{
 
     private int gesundheit = 100;
 
@@ -27,8 +29,15 @@ public class Rotkaeppchen extends VerwunschenerWald {
     }
 
     public void gesundheitVerringern(int wert) {
-        if ((gesundheit - wert) >= 0)
             gesundheit = gesundheit - wert;
+
+            if(gesundheit < 0){
+                gesundheit = 0;
+            }
+    }
+
+    public void setGesundheit(int gesundheit) {
+        this.gesundheit = gesundheit;
     }
 
     public boolean istNochLebendig(){
@@ -38,5 +47,18 @@ public class Rotkaeppchen extends VerwunschenerWald {
     @Override
     public String getName() {
         return "R";
+    }
+
+    @Override
+    public void sprechen(Person konversationspartner, int zaehler) {
+        if(zaehler == 1 ){
+            System.out.println("Hallo, Oma");
+            zaehler ++;
+            sprechen(this, zaehler);
+        }
+
+        if(zaehler == 3){
+            System.out.println("Tschuess, Oma");
+        }
     }
 }
