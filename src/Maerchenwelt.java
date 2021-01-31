@@ -142,18 +142,17 @@ public class Maerchenwelt {
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                         } else if (karte[r_x][r_y - 1].getName().equals("W")) {
-                            //rotkaeppchen.gesundheitVerringern(karte[r_x][r_y - 1].schaden);
-                            //isLebending = rotkaeppchen.istNochLebendig();
                             rotkaeppchen.geheHoch();
                             decreaseHealth(r_x, r_y - 1);
+                            deletePosition(r_x,r_y);
+
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                             break;
                         } else if (karte[r_x][r_y - 1].getName().equals("G")) {
-                            // rotkaeppchen.gesundheitVerringern(karte[r_x][r_y - 1].schaden);
-                            //isLebending = rotkaeppchen.istNochLebendig();
                             rotkaeppchen.geheHoch();
                             decreaseHealth(r_x, r_y - 1);
+                            deletePosition(r_x, r_y);
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                             break;
@@ -177,18 +176,16 @@ public class Maerchenwelt {
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                         } else if (karte[r_x - 1][r_y].getName().equals("W")) {
-                            // rotkaeppchen.gesundheitVerringern(karte[r_x - 1][r_y].schaden);
-                            //isLebending = rotkaeppchen.istNochLebendig();
-                            decreaseHealth(r_x - 1, r_y);
                             rotkaeppchen.geheLinks();
+                            decreaseHealth(r_x - 1, r_y);
+                            deletePosition(r_x, r_y);
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                             break;
                         } else if (karte[r_x - 1][r_y].getName().equals("G")) {
-                            // rotkaeppchen.gesundheitVerringern(karte[r_x - 1][r_y].schaden);
-                            //isLebending = rotkaeppchen.istNochLebendig();
                             rotkaeppchen.geheLinks();
                             decreaseHealth(r_x - 1, r_y);
+                            deletePosition(r_x, r_y);
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                             break;
@@ -212,18 +209,17 @@ public class Maerchenwelt {
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                         } else if (karte[r_x + 1][r_y].getName().equals("W")) {
-                            //  rotkaeppchen.gesundheitVerringern(karte[r_x + 1][r_y].schaden);
-                            //isLebending = rotkaeppchen.istNochLebendig();
                             rotkaeppchen.geheRechts();
                             decreaseHealth(r_x + 1, r_y);
+                            deletePosition(r_x, r_y);
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
 
-
                         } else if (karte[r_x + 1][r_y].getName().equals("G")) {
-                            // rotkaeppchen.gesundheitVerringern(karte[r_x + 1][r_y].schaden);
-                            //isLebending = rotkaeppchen.istNochLebendig();
+                            rotkaeppchen.geheRechts();
                             decreaseHealth(r_x + 1, r_y);
+                            deletePosition(r_x, r_y);
+
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                             break;
@@ -248,19 +244,18 @@ public class Maerchenwelt {
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                         } else if (karte[r_x][r_y + 1].getName().equals("W")) {
-                            // rotkaeppchen.gesundheitVerringern(karte[r_x][r_y + 1].schaden);
-                            // isLebending = rotkaeppchen.istNochLebendig();
                             rotkaeppchen.geheRunter();
                             decreaseHealth(r_x, r_y + 1);
+                            deletePosition(r_x, r_y);
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                             break;
 
                         } else if (karte[r_x][r_y + 1].getName().equals("G")) {
-                            // rotkaeppchen.gesundheitVerringern(karte[r_x][r_y + 1].schaden);
-                            //isLebending = rotkaeppchen.istNochLebendig();
                             rotkaeppchen.geheRunter();
                             decreaseHealth(r_x, r_y + 1);
+                            deletePosition(r_x, r_y);
+
                             Position neu = new Position(r.getX(), r.getY());
                             weg.add(neu);
                             break;
@@ -362,8 +357,13 @@ public class Maerchenwelt {
     }
 
     public void deletePosition(int i, int j) {
-        karte[i][j] = null;
-        karte[rotkaeppchen.position.getX()][rotkaeppchen.position.getY()] = rotkaeppchen;
+        if (karte[i][j] instanceof Rotkaeppchen) {
+            karte [i] [j] = null;
+        }
+
+        if(karte[rotkaeppchen.position.getX()][rotkaeppchen.position.getY()] == null){
+            karte[rotkaeppchen.position.getX()][rotkaeppchen.position.getY()] = rotkaeppchen;
+        }
     }
 
     public void decreaseHealth(int x, int y) {
