@@ -14,8 +14,7 @@ public class Oma extends VerwunschenerWald implements Person {
         if (zaehler == 2) {
             System.out.println("Hallo Rotkaeppchen");
             zaehler++;
-            sprechen(this, zaehler);
-            return;
+            konversationspartner.sprechen(this, zaehler);
         }
     }
 }

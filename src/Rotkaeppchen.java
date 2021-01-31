@@ -54,7 +54,7 @@ public class Rotkaeppchen extends VerwunschenerWald implements Person{
         if(zaehler == 1 ){
             System.out.println("Hallo, Oma");
             zaehler ++;
-            sprechen(this, zaehler);
+            konversationspartner.sprechen(this, zaehler);
         }
 
         if(zaehler == 3){
